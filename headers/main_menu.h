@@ -36,8 +36,8 @@ public:
     }
     void reset_anim_perso();//RAZ du numéro d'animation du sprite personnage
     void launch_music();//démarre la musique de fond
-    bool pause_game(sf::RenderWindow* p_window);//lance le menu de pause
-    bool intro_jeu(sf::RenderWindow* p_window);
+    bool pause_game(sf::RenderWindow* p_window);//lance le menu de pause /!\ FONCTION BLOQUANTE
+    bool intro_jeu(sf::RenderWindow* p_window);//lance l'intro /!\ FONCTION BLOQUANTE
 
 protected:
 
@@ -50,9 +50,10 @@ private:
     sf::Sprite s_fonds;
     sf::Sprite s_col_map;
     sf::Sprite s_sup;
-    /** Relative au texte (unitilisé pour l'instant **/
+    /** Relative au texte **/
     sf::Font font;
     sf::Text text;
+    sf::Text text_intro;
     /** POINTEUR VERS L'ENTITE FENÊTRE **/
     sf::RenderWindow* p_window;
     /** CLASS DE GESTION DU PERSONNAGE_JOUEUR **/
@@ -70,6 +71,8 @@ private:
     /** EFFET DE SON **/
     sf::SoundBuffer bump_sound;
     sf::Sound sound_bump;
+    /** TIMER DE L'INTRO **/
+    sf::Clock timer_intro;
 };
 
 #endif // MAIN_MENU_H

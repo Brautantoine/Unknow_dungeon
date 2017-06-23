@@ -15,7 +15,7 @@ int main()
     Main_menu menu;
     menu.wake_up(); /**< On appel la fonction d'initialisation de Main_menu */
 
-
+    if(!menu.intro_jeu(&window))window.close(); /**< On appel la fonction de l'intro et l'on test son retour */
     // on fait tourner le programme tant que la fenêtre n'a pas été fermée
     while (window.isOpen())
     {

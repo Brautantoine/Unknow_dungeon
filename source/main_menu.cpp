@@ -113,18 +113,18 @@ void Main_menu::wake_up()
     load_all_font(); //chargement des polices d'écritures
     player.wake_up(560,560,"IMG/anim_2.png"); //initialisation du joueur
     text.setFont(font); //on "ratache" la police au texte
-
+    text_intro.setFont(font);
     text.setCharacterSize(50);//taille de la police
-
+    text_intro.setCharacterSize(25);
     text.setFillColor(sf::Color::Black);//couleur du corps du texte
-
+    text_intro.setFillColor(sf::Color::Black);
     text.setPosition(sf::Vector2f(90,100));//position du texte
     text.setOutlineColor(sf::Color::White);//couleur du contour du texte
-
+    text_intro.setOutlineColor(sf::Color::White);
     text.setOutlineThickness(5);//taille du contour du texte
-
+    text_intro.setOutlineThickness(3);
     sound_bump.setBuffer(bump_sound);//chargement du son dans son buffer
-    sound_bump.setVolume(20);//on fixe le volume du son
+    sound_bump.setVolume(40);//on fixe le volume du son
     collision.load_all_image();//chargement de la carte de collision
     launch_music(); //lancement de la musique
 }
@@ -225,15 +225,15 @@ void Main_menu::launch_music()
  * \param pointeur vers la fenêtres
  * \param sf::RenderWindow
  * \return bool
- *
+ *  FONCTION BLOQUANTE
  */
 
 bool Main_menu::pause_game(sf::RenderWindow* p_window)
 {
-    bool ret=true; //valeur de retour par défaut vrai)
+    bool ret=true; //valeur de retour (par défaut vrai)
     sf::Event event;//classe de détection des événements
     back_music.pause();//on met en pause la musique
-    text.setString("&&& PAUSE &&&\n\n\nresume with \"B\"");//on charge le texte de mise en pause
+    text.setString("*** PAUSE ***\n\n\nresume with \"B\"");//on charge le texte de mise en pause
     draw_all_sprite(p_window);//on redessine tous les sprite car l'on vient de passer par un clear
     p_window->draw(text);//on dessine le texte
     p_window->display();//on l'on affiche la frame
@@ -262,8 +262,73 @@ bool Main_menu::pause_game(sf::RenderWindow* p_window)
 
 void Main_menu::load_all_font()
 {
-    if (!font.loadFromFile("FONT/petyka.ttf")) //chargement de la texture depuis le disque (dossiers IMG dans le dossier projet)
+    if (!font.loadFromFile("FONT/8-bit.ttf")) //chargement de la texture depuis le disque (dossiers IMG dans le dossier projet)
     {
         std::cout << "Erreur du chargement font" << std::endl; //affichage message d'erreur si le chargement échoue
     }
+}
+
+/** \brief Lance l'intro du jeu
+ *
+ * \param pointeur sur la fenêtre
+ * \param sf::RenderWindow*
+ * \return bool
+ *  FONCTION BLOQUANTE
+ */
+
+bool Main_menu::intro_jeu(sf::RenderWindow* p_window)
+{
+    bool ret=true; //valeur de retour (par défaut vrai)
+    bool core=true; //condition de fin de boucle
+    int timer_offset(0); //permet de passer l'intro
+    sf::Event event;//classe de détection des événements
+    text_intro.setPosition(10,60); //on positionne le texte en position 1
+    text_intro.setString("Ainsi commence notre histoire,");//on charge le texte
+    timer_intro.restart();//On s'assure que le timer commence à 0
+    while (core&&!(event.type == sf::Event::Closed))//tant que l'on appuie pas sur "B" ou la croix rouge
+    {
+        p_window->draw(text_intro);//on dessine le texte
+        elapsed_time=timer_intro.getElapsedTime();//on récupére le temps depuis le début
+        while (p_window->pollEvent(event)) /**< Boucle de gestion des évènement */ //indispensable sinon la condition du while n'est jamais mise à jour
+        {
+
+            // fermeture de la fenêtre lorsque l'utilisateur le souhaite
+            if (event.type == sf::Event::Closed) //Correspond à l'appuie sur la croix rouge
+                // p_window->close(); //fermeture de la fenêtre //impossible de fermer une fenêtre en dehors de là où elle est déclarée
+                ret=false;//on revoie une valeur fausse pour fermer la fenêtre
+            if (event.type == sf::Event::JoystickButtonPressed) /**< Correspond à l'appuie aprés relachement sur un bouton */
+            {
+                if (sf::Joystick::isButtonPressed(0, 0)) // On vérifie que le bouton "A" est appuyé
+                {
+                    timer_offset+=2;//on augmente le timer_offset pour réduire les attentes
+                }
+            }
+
+        }
+        if(elapsed_time.asSeconds()>2-timer_offset)//le timer offset réduit les conditions d'attentes
+        {
+            text_intro.setPosition(150,150);//position 2
+            text_intro.setString("Comme toutes les histoires, dans un village");//on charge le texte de mise en pause
+        }
+        if(elapsed_time.asSeconds()>4-timer_offset)//le timer offset réduit les conditions d'attentes
+        {
+            text_intro.setPosition(10,250);//position 3
+            text_intro.setString("Mais la notre est differente :");//on charge le texte de mise en pause
+        }
+        if(elapsed_time.asSeconds()>6-timer_offset)////le timer offset réduit les conditions d'attentes
+        {
+            text_intro.setPosition(250,350);//position 4
+            text_intro.setString("La notre est \"INCONNUE\" !!!");//on charge le texte de mise en pause
+        }
+        if(elapsed_time.asSeconds()>8-timer_offset)//le timer offset réduit les conditions d'attentes
+        {
+            text_intro.setCharacterSize(14);//on réduit la police
+            text_intro.setOutlineThickness(2);//on réduit la police
+            text_intro.setPosition(450,463);//position 5
+            text_intro.setString("Appuyez sur \"A\" pour continuer");//on charge le texte de mise en pause
+            if(sf::Joystick::isButtonPressed(0,0))core=false; //On quitte la boucle si le bouton "A" est appuyé
+        }
+        p_window->display();//on l'on affiche la frame
+    }
+    return ret;
 }
